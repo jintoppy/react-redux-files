@@ -1,11 +1,17 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import {Link} from 'react-router';
+
+const mapStateToProps = (state) => {
+    return {
+        employeesCount: state.employee.employees.length
+    };
+};
 
 class Header extends Component{
     constructor(props){
         super(props);
         this.state = {
-            employeesCount: 0,
             menuItems: [
                 {
                     link: '/adduser',
@@ -40,7 +46,7 @@ class Header extends Component{
                         {listItems}
                     </ul>
                     <span className="right-header">
-                        Count: {this.state.employeesCount}
+                        Count: {this.props.employeesCount}
                     </span>
                 </div>
                 
@@ -49,4 +55,4 @@ class Header extends Component{
     }
 }
 
-export default Header;
+export default connect(mapStateToProps)(Header);
