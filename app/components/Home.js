@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import EmployeeContainer from './EmployeeContainer';
+import EmployeeContainer from '../containers/EmployeeContainer';
 
 class Home extends Component{
     render(){
