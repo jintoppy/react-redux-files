@@ -7,10 +7,19 @@ import Home from './components/Home';
 import AddUser from './containers/AddUser';
 import 'whatwg-fetch';
 import AppReducer from './reducers';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
+import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-const store = createStore(AppReducer);
+const middlewares = [thunk];
+
+const store = createStore(
+    AppReducer,
+    composeWithDevTools(
+        applyMiddleware(...middlewares)
+    )
+);
 
 ReactDOM.render(
         <div>

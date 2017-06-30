@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import EmployeeList from '../components/EmployeeList';
+import * as EmployeeActions from '../actions/employee';
 
 
 const mapStateToProps = (state) => {
@@ -11,11 +12,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        employeeListReceived: (employees) => {
-            dispatch({
-                type: 'EMPLOYEE_LIST_RECEIVED',
-                payload: employees
-            })
+        getEmployees: () => {
+            dispatch(EmployeeActions.getEmployees())
         }
     };
 };
@@ -25,9 +23,7 @@ class EmployeeContainer extends Component{
         super(props);
     }
     componentWillMount(){
-        fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users')
-            .then(res => res.json())
-            .then(res => this.props.employeeListReceived(res));
+        this.props.getEmployees();
     }
     render(){
         return (

@@ -1,4 +1,14 @@
 import React, {Component} from 'react';
+import * as EmployeeActions from '../actions/employee';
+import {connect} from 'react-redux';
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addUser: (employee) => {
+            dispatch(EmployeeActions.addUser(employee))
+        }
+    };
+};
 
 class AddUser extends Component{
     constructor(props){
@@ -7,17 +17,10 @@ class AddUser extends Component{
     onSubmit(e){
         e.preventDefault();
         console.log('form submitted');
-        fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-             body: JSON.stringify({
-                 name: this.refs.name.value,
-                 designation: this.refs.designation.value
-             })
-        })
-
+        this.props.addUser({
+            name: this.refs.name.value,
+            designation: this.refs.designation.value
+        });
 
     }
     render(){
@@ -41,4 +44,4 @@ class AddUser extends Component{
     }
 }
 
-export default AddUser;
+export default connect(null, mapDispatchToProps)(AddUser);

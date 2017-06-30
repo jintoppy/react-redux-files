@@ -68,13 +68,13 @@
 	
 	var _Home2 = _interopRequireDefault(_Home);
 	
-	var _AddUser = __webpack_require__(268);
+	var _AddUser = __webpack_require__(269);
 	
 	var _AddUser2 = _interopRequireDefault(_AddUser);
 	
 	__webpack_require__(264);
 	
-	var _reducers = __webpack_require__(269);
+	var _reducers = __webpack_require__(270);
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
@@ -82,9 +82,17 @@
 	
 	var _reactRedux = __webpack_require__(218);
 	
+	var _reduxThunk = __webpack_require__(272);
+	
+	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+	
+	var _reduxDevtoolsExtension = __webpack_require__(273);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var store = (0, _redux.createStore)(_reducers2.default);
+	var middlewares = [_reduxThunk2.default];
+	
+	var store = (0, _redux.createStore)(_reducers2.default, (0, _reduxDevtoolsExtension.composeWithDevTools)(_redux.applyMiddleware.apply(undefined, middlewares)));
 	
 	_reactDom2.default.render(_react2.default.createElement(
 	    'div',
@@ -28786,6 +28794,12 @@
 	
 	var _EmployeeList2 = _interopRequireDefault(_EmployeeList);
 	
+	var _employee = __webpack_require__(268);
+	
+	var EmployeeActions = _interopRequireWildcard(_employee);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28802,11 +28816,8 @@
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	    return {
-	        employeeListReceived: function employeeListReceived(employees) {
-	            dispatch({
-	                type: 'EMPLOYEE_LIST_RECEIVED',
-	                payload: employees
-	            });
+	        getEmployees: function getEmployees() {
+	            dispatch(EmployeeActions.getEmployees());
 	        }
 	    };
 	};
@@ -28823,13 +28834,7 @@
 	    _createClass(EmployeeContainer, [{
 	        key: 'componentWillMount',
 	        value: function componentWillMount() {
-	            var _this2 = this;
-	
-	            fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users').then(function (res) {
-	                return res.json();
-	            }).then(function (res) {
-	                return _this2.props.employeeListReceived(res);
-	            });
+	            this.props.getEmployees();
 	        }
 	    }, {
 	        key: 'render',
@@ -28985,6 +28990,51 @@
 
 /***/ }),
 /* 268 */
+/***/ (function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var onEmployeeListReceived = exports.onEmployeeListReceived = function onEmployeeListReceived(employees) {
+	    return {
+	        type: 'EMPLOYEE_LIST_RECEIVED',
+	        payload: employees
+	    };
+	};
+	
+	var onEmployeeListRequest = exports.onEmployeeListRequest = function onEmployeeListRequest() {
+	    return {
+	        type: 'EMPLOYEE_LIST_REQUESTED'
+	    };
+	};
+	
+	var getEmployees = exports.getEmployees = function getEmployees() {
+	    return function (dispatch) {
+	        dispatch(onEmployeeListRequest());
+	        fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users').then(function (res) {
+	            return res.json();
+	        }).then(function (res) {
+	            dispatch(onEmployeeListReceived(res));
+	        });
+	    };
+	};
+	
+	var addUser = exports.addUser = function addUser(employee) {
+	    return function (dispatch) {
+	        fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json'
+	            },
+	            body: JSON.stringify(employee)
+	        }).then(dispatch(getEmployees())).catch(function () {});
+	    };
+	};
+
+/***/ }),
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -28999,6 +29049,14 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _employee = __webpack_require__(268);
+	
+	var EmployeeActions = _interopRequireWildcard(_employee);
+	
+	var _reactRedux = __webpack_require__(218);
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29006,6 +29064,14 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+	    return {
+	        addUser: function addUser(employee) {
+	            dispatch(EmployeeActions.addUser(employee));
+	        }
+	    };
+	};
 	
 	var AddUser = function (_Component) {
 	    _inherits(AddUser, _Component);
@@ -29021,15 +29087,9 @@
 	        value: function onSubmit(e) {
 	            e.preventDefault();
 	            console.log('form submitted');
-	            fetch('http://5955445c2374e400111e47e7.mockapi.io/api/users', {
-	                method: 'POST',
-	                headers: {
-	                    'Content-Type': 'application/json'
-	                },
-	                body: JSON.stringify({
-	                    name: this.refs.name.value,
-	                    designation: this.refs.designation.value
-	                })
+	            this.props.addUser({
+	                name: this.refs.name.value,
+	                designation: this.refs.designation.value
 	            });
 	        }
 	    }, {
@@ -29071,10 +29131,10 @@
 	    return AddUser;
 	}(_react.Component);
 	
-	exports.default = AddUser;
+	exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(AddUser);
 
 /***/ }),
-/* 269 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29085,7 +29145,7 @@
 	
 	var _redux = __webpack_require__(236);
 	
-	var _employee = __webpack_require__(270);
+	var _employee = __webpack_require__(271);
 	
 	var _employee2 = _interopRequireDefault(_employee);
 	
@@ -29098,7 +29158,7 @@
 	exports.default = AppReducer;
 
 /***/ }),
-/* 270 */
+/* 271 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -29126,6 +29186,60 @@
 	};
 	
 	exports.default = employee;
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports) {
+
+	'use strict';
+	
+	exports.__esModule = true;
+	function createThunkMiddleware(extraArgument) {
+	  return function (_ref) {
+	    var dispatch = _ref.dispatch,
+	        getState = _ref.getState;
+	    return function (next) {
+	      return function (action) {
+	        if (typeof action === 'function') {
+	          return action(dispatch, getState, extraArgument);
+	        }
+	
+	        return next(action);
+	      };
+	    };
+	  };
+	}
+	
+	var thunk = createThunkMiddleware();
+	thunk.withExtraArgument = createThunkMiddleware;
+	
+	exports['default'] = thunk;
+
+/***/ }),
+/* 273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var compose = __webpack_require__(236).compose;
+	
+	exports.__esModule = true;
+	exports.composeWithDevTools = (
+	  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+	    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ :
+	    function() {
+	      if (arguments.length === 0) return undefined;
+	      if (typeof arguments[0] === 'object') return compose;
+	      return compose.apply(null, arguments);
+	    }
+	);
+	
+	exports.devToolsEnhancer = (
+	  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION__ ?
+	    window.__REDUX_DEVTOOLS_EXTENSION__ :
+	    function() { return function(noop) { return noop; } }
+	);
+
 
 /***/ })
 /******/ ]);
